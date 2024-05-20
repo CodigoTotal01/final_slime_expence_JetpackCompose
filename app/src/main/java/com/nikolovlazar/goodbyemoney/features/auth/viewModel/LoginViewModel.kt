@@ -1,4 +1,4 @@
-package com.nikolovlazar.goodbyemoney.features.tracker.auth.viewModel
+package com.nikolovlazar.goodbyemoney.features.auth.viewModel
 
 import android.util.Patterns
 import androidx.lifecycle.MutableLiveData

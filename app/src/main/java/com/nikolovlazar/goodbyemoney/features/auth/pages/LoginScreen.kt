@@ -1,4 +1,4 @@
-package com.nikolovlazar.goodbyemoney.features.tracker.auth.pages
+package com.nikolovlazar.goodbyemoney.features.auth.pages
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -40,7 +40,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nikolovlazar.goodbyemoney.R
-import com.nikolovlazar.goodbyemoney.features.tracker.auth.viewModel.LoginViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,7 +159,8 @@ fun PasswordTextArea(password: String, onTextChanged: (String) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Password") },
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color(0xFFFAFAFA),
+            textColor = Color.Black, // Color de texto para ambos estados, enfocado y sin enfocar
+            containerColor = Color.White, // Color de fondo para el estado sin enfocar
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
@@ -196,7 +197,8 @@ fun EmailTextArea(email: String, onTextChanged: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color(0xFFFAFAFA),
+            textColor = Color.Black, // Color de texto para ambos estados, enfocado y sin enfocar
+            containerColor = Color.White, // Color de fondo para el estado sin enfocar
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )

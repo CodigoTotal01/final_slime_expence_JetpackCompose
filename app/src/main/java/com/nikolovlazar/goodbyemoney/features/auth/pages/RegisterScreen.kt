@@ -1,4 +1,4 @@
-package com.nikolovlazar.goodbyemoney.features.tracker.auth.pages
+package com.nikolovlazar.goodbyemoney.features.auth.pages
 
 
 import android.annotation.SuppressLint
@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nikolovlazar.goodbyemoney.R
-import com.nikolovlazar.goodbyemoney.features.tracker.auth.viewModel.RegisterViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.RegisterViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,13 +146,13 @@ fun FullNameTextArea(fullName: String, onTextChanged: (String) -> Unit) {
         maxLines = 1,
         singleLine = true,
         colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.Black, // Color de texto para ambos estados, enfocado y sin enfocar
             containerColor = Color(0xFFFAFAFA),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )
     )
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmPasswordTextArea(confirmPassword: String, onTextChanged: (String) -> Unit) {
@@ -162,7 +162,10 @@ fun ConfirmPasswordTextArea(confirmPassword: String, onTextChanged: (String) -> 
         onValueChange = { onTextChanged(it) },
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Confirm Password") },
+
         colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.Black, // Color de texto para ambos estados, enfocado y sin enfocar
+
             containerColor = Color(0xFFFAFAFA),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
