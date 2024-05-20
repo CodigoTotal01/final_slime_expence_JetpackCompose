@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.nikolovlazar.goodbyemoney.features.tracker.auth.pages.LoginScreen
+import com.nikolovlazar.goodbyemoney.features.tracker.auth.pages.RegisterScreen
 
 @Composable
 fun NavGraph(navController: NavHostController){
@@ -17,13 +18,13 @@ fun NavGraph(navController: NavHostController){
             })
         }
 
-//        composable("register"){
-//            RegisterScreen(navController, onRegisterSuccess = {
-//                navController.navigate("home"){
-//                    popUpTo(0);
-//                }
-//            })
-//        }
+        composable("register"){
+            RegisterScreen(navController, onRegisterSuccess = {
+                navController.navigate("home"){
+                    popUpTo(0);
+                }
+            })
+        }
 //
 //        composable("home"){
 //            MainHome()
