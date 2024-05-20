@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
 import com.github.tehras.charts.piechart.utils.toLegacyInt
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
 
 class LabelDrawer(val recurrence: Recurrence, private val lastDay: Int? = -1) :

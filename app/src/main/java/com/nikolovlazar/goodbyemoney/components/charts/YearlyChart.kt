@@ -10,10 +10,10 @@ import androidx.compose.ui.unit.sp
 import com.github.tehras.charts.bar.BarChart
 import com.github.tehras.charts.bar.BarChartData
 import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
-import com.nikolovlazar.goodbyemoney.models.Expense
-import com.nikolovlazar.goodbyemoney.models.Recurrence
-import com.nikolovlazar.goodbyemoney.models.groupedByDayOfWeek
-import com.nikolovlazar.goodbyemoney.models.groupedByMonth
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.groupedByDayOfWeek
+import com.nikolovlazar.goodbyemoney.features.tracker.models.groupedByMonth
 import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
 import com.nikolovlazar.goodbyemoney.utils.simplifyNumber
 import java.time.DayOfWeek

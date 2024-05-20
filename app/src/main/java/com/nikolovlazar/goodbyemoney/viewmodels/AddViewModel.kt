@@ -3,9 +3,9 @@ package com.nikolovlazar.goodbyemoney.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nikolovlazar.goodbyemoney.db
-import com.nikolovlazar.goodbyemoney.models.Category
-import com.nikolovlazar.goodbyemoney.models.Expense
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Category
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.notifications.ResultsChange
 import io.realm.kotlin.query.RealmResults
@@ -17,12 +17,12 @@ import java.time.LocalDateTime
 import java.util.Currency
 
 data class AddScreenState(
-  val amount: String = "",
-  val recurrence: Recurrence = Recurrence.None,
-  val date: LocalDate = LocalDate.now(),
-  val note: String = "",
-  val category: Category? = null,
-  val categories: RealmResults<Category>? = null
+    val amount: String = "",
+    val recurrence: Recurrence = Recurrence.None,
+    val date: LocalDate = LocalDate.now(),
+    val note: String = "",
+    val category: Category? = null,
+    val categories: RealmResults<Category>? = null
 )
 
 class AddViewModel : ViewModel() {

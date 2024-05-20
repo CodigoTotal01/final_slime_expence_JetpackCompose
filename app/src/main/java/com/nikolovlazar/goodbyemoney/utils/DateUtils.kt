@@ -1,6 +1,6 @@
 package com.nikolovlazar.goodbyemoney.utils
 
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth

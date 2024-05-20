@@ -3,8 +3,8 @@ package com.nikolovlazar.goodbyemoney.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nikolovlazar.goodbyemoney.db
-import com.nikolovlazar.goodbyemoney.models.Expense
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import com.nikolovlazar.goodbyemoney.utils.calculateDateRange
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ExpensesState(
-  val recurrence: Recurrence = Recurrence.Daily,
-  val sumTotal: Double = 1250.98,
-  val expenses: List<Expense> = listOf()
+    val recurrence: Recurrence = Recurrence.Daily,
+    val sumTotal: Double = 1250.98,
+    val expenses: List<Expense> = listOf()
 )
 
 class ExpensesViewModel: ViewModel() {

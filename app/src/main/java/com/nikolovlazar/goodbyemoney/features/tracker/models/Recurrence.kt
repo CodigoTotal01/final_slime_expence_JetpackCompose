@@ -1,4 +1,4 @@
-package com.nikolovlazar.goodbyemoney.models
+package com.nikolovlazar.goodbyemoney.features.tracker.models
 
 sealed class Recurrence(val name: String, val target: String) {
   object None : Recurrence("None", "None")

@@ -1,4 +1,4 @@
-package com.nikolovlazar.goodbyemoney.models
+package com.nikolovlazar.goodbyemoney.features.tracker.models
 
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmObject
@@ -21,11 +21,11 @@ class Expense(): RealmObject {
   var category: Category? = null
 
   constructor(
-    amount: Double,
-    recurrence: Recurrence,
-    date: LocalDateTime,
-    note: String,
-    category: Category,
+      amount: Double,
+      recurrence: Recurrence,
+      date: LocalDateTime,
+      note: String,
+      category: Category,
   ) : this() {
     this.amount = amount
     this._recurrenceName = recurrence.name
@@ -36,8 +36,8 @@ class Expense(): RealmObject {
 }
 
 data class DayExpenses(
-  val expenses: MutableList<Expense>,
-  var total: Double,
+    val expenses: MutableList<Expense>,
+    var total: Double,
 )
 
 fun List<Expense>.groupedByDay(): Map<LocalDate, DayExpenses> {

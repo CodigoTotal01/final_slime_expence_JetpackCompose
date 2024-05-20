@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.github.tehras.charts.bar.BarChartData
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import com.nikolovlazar.goodbyemoney.ui.theme.SystemGray04
 
 class BarDrawer constructor(recurrence: Recurrence) :

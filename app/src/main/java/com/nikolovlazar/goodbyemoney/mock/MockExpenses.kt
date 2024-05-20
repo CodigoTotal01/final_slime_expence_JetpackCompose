@@ -1,9 +1,9 @@
 package com.nikolovlazar.goodbyemoney.mock
 
 import androidx.compose.ui.graphics.Color
-import com.nikolovlazar.goodbyemoney.models.Category
-import com.nikolovlazar.goodbyemoney.models.Expense
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Category
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import io.github.serpro69.kfaker.Faker
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit

@@ -14,7 +14,7 @@ import com.nikolovlazar.goodbyemoney.components.charts.MonthlyChart
 import com.nikolovlazar.goodbyemoney.components.charts.WeeklyChart
 import com.nikolovlazar.goodbyemoney.components.charts.YearlyChart
 import com.nikolovlazar.goodbyemoney.components.expensesList.ExpensesList
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
 import com.nikolovlazar.goodbyemoney.ui.theme.Typography
 import com.nikolovlazar.goodbyemoney.utils.formatDay
@@ -26,10 +26,10 @@ import java.time.LocalDate
 
 @Composable
 fun ReportPage(
-  innerPadding: PaddingValues,
-  page: Int,
-  recurrence: Recurrence,
-  vm: ReportPageViewModel = viewModel(
+    innerPadding: PaddingValues,
+    page: Int,
+    recurrence: Recurrence,
+    vm: ReportPageViewModel = viewModel(
     key = "$page-${recurrence.name}",
     factory = viewModelFactory {
       ReportPageViewModel(page, recurrence)

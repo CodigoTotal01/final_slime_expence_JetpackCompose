@@ -5,7 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.nikolovlazar.goodbyemoney.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
 import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
 import com.nikolovlazar.goodbyemoney.ui.theme.Typography
 import java.text.DecimalFormat

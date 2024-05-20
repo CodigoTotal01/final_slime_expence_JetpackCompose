@@ -10,8 +10,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nikolovlazar.goodbyemoney.components.ExpensesDayGroup
 import com.nikolovlazar.goodbyemoney.mock.mockExpenses
-import com.nikolovlazar.goodbyemoney.models.Expense
-import com.nikolovlazar.goodbyemoney.models.groupedByDay
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.groupedByDay
 import com.nikolovlazar.goodbyemoney.ui.theme.GoodbyeMoneyTheme
 
 @Composable

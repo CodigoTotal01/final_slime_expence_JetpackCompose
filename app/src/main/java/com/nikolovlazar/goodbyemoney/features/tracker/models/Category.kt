@@ -1,9 +1,10 @@
-package com.nikolovlazar.goodbyemoney.models
+package com.nikolovlazar.goodbyemoney.features.tracker.models
 
 import androidx.compose.ui.graphics.Color
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
+
 
 class Category() : RealmObject {
   @PrimaryKey

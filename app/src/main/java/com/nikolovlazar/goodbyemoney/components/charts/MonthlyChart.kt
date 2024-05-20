@@ -11,9 +11,9 @@ import com.github.tehras.charts.bar.BarChart
 import com.github.tehras.charts.bar.BarChartData
 import com.github.tehras.charts.bar.renderer.xaxis.SimpleXAxisDrawer
 import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
-import com.nikolovlazar.goodbyemoney.models.Expense
-import com.nikolovlazar.goodbyemoney.models.Recurrence
-import com.nikolovlazar.goodbyemoney.models.groupedByDayOfMonth
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.groupedByDayOfMonth
 import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
 import com.nikolovlazar.goodbyemoney.utils.simplifyNumber
 import java.time.DayOfWeek

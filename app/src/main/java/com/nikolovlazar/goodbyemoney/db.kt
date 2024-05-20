@@ -1,7 +1,7 @@
 package com.nikolovlazar.goodbyemoney
 
-import com.nikolovlazar.goodbyemoney.models.Category
-import com.nikolovlazar.goodbyemoney.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Category
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 

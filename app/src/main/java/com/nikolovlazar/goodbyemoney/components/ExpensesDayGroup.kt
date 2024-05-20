@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.nikolovlazar.goodbyemoney.models.DayExpenses
+import com.nikolovlazar.goodbyemoney.features.tracker.models.DayExpenses
 import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
 import com.nikolovlazar.goodbyemoney.ui.theme.Typography
 import com.nikolovlazar.goodbyemoney.utils.formatDay
@@ -20,9 +20,9 @@ import java.time.LocalDate
 
 @Composable
 fun ExpensesDayGroup(
-  date: LocalDate,
-  dayExpenses: DayExpenses,
-  modifier: Modifier = Modifier
+    date: LocalDate,
+    dayExpenses: DayExpenses,
+    modifier: Modifier = Modifier
 ) {
   Column(modifier = modifier) {
     Text(

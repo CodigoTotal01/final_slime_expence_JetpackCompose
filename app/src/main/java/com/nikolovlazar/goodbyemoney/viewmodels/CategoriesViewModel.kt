@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nikolovlazar.goodbyemoney.db
-import com.nikolovlazar.goodbyemoney.models.Category
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Category
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.Dispatchers
@@ -75,10 +75,12 @@ class CategoriesViewModel : ViewModel() {
   fun createNewCategory() {
     viewModelScope.launch(Dispatchers.IO) {
       db.write {
-        this.copyToRealm(Category(
+        this.copyToRealm(
+            Category(
           _uiState.value.newCategoryName,
           _uiState.value.newCategoryColor
-        ))
+        )
+        )
       }
       _uiState.update { currentState ->
         currentState.copy(

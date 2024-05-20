@@ -14,8 +14,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import com.nikolovlazar.goodbyemoney.components.TableRow
 import com.nikolovlazar.goodbyemoney.db
-import com.nikolovlazar.goodbyemoney.models.Category
-import com.nikolovlazar.goodbyemoney.models.Expense
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Category
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Expense
 import com.nikolovlazar.goodbyemoney.ui.theme.BackgroundElevated
 import com.nikolovlazar.goodbyemoney.ui.theme.DividerColor
 import com.nikolovlazar.goodbyemoney.ui.theme.Shapes

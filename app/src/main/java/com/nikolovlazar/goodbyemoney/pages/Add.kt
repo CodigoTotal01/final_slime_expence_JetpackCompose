@@ -24,7 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
 import com.nikolovlazar.goodbyemoney.components.TableRow
 import com.nikolovlazar.goodbyemoney.components.UnstyledTextField
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import com.nikolovlazar.goodbyemoney.ui.theme.*
 import com.nikolovlazar.goodbyemoney.viewmodels.AddViewModel
 

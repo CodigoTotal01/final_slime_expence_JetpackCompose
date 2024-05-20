@@ -9,7 +9,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.nikolovlazar.goodbyemoney.R
 import com.nikolovlazar.goodbyemoney.components.ReportPage
-import com.nikolovlazar.goodbyemoney.models.Recurrence
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Recurrence
 import com.nikolovlazar.goodbyemoney.ui.theme.TopAppBarBackground
 import com.nikolovlazar.goodbyemoney.viewmodels.ReportsViewModel
 

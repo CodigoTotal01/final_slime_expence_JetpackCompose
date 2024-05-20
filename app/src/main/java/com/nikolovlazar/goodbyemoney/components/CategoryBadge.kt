@@ -6,7 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.nikolovlazar.goodbyemoney.models.Category
+import com.nikolovlazar.goodbyemoney.features.tracker.models.Category
 import com.nikolovlazar.goodbyemoney.ui.theme.Shapes
 import com.nikolovlazar.goodbyemoney.ui.theme.Typography
 
