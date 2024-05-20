@@ -20,7 +20,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.nikolovlazar.goodbyemoney.pages.*
+import com.nikolovlazar.goodbyemoney.features.tracker.pages.Add
+import com.nikolovlazar.goodbyemoney.features.tracker.pages.Categories
+import com.nikolovlazar.goodbyemoney.features.tracker.pages.Expenses
+import com.nikolovlazar.goodbyemoney.features.tracker.pages.Reports
+import com.nikolovlazar.goodbyemoney.features.tracker.pages.Settings
+import com.nikolovlazar.goodbyemoney.features.tracker.pages.*
 import com.nikolovlazar.goodbyemoney.ui.theme.GoodbyeMoneyTheme
 import com.nikolovlazar.goodbyemoney.ui.theme.TopAppBarBackground
 import io.sentry.compose.withSentryObservableEffect
