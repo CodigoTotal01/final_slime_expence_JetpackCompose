@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import kotlinx.coroutines.delay
 
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel: ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email : LiveData<String> = _email
@@ -30,10 +30,17 @@ class LoginViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+
+    fun onFormSubmit(){
+//        loginUserCallBack(_email.value!!, _password.value!!)
+    }
     suspend fun onLoginSelected() {
         _isLoading.value = true
         delay(4000)
         _isLoading.value = false
     }
 
+
 }
+
+
