@@ -10,7 +10,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.nikolovlazar.goodbyemoney.features.auth.pages.LoginScreen
-import com.nikolovlazar.goodbyemoney.features.auth.pages.MainHome
 import com.nikolovlazar.goodbyemoney.features.auth.pages.RegisterScreen
 import com.nikolovlazar.goodbyemoney.features.tracker.pages.Add
 import com.nikolovlazar.goodbyemoney.features.tracker.pages.Categories

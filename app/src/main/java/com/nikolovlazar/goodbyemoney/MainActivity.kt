@@ -48,8 +48,6 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController().withSentryObservableEffect()
         val backStackEntry by navController.currentBackStackEntryAsState()
 
-
-
         showBottomBar = when (backStackEntry?.destination?.route) {
           "settings/categories" -> false
           "login" -> false
