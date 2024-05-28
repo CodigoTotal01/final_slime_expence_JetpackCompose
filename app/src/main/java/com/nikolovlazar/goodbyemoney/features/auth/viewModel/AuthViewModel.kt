@@ -6,6 +6,7 @@ import com.nikolovlazar.goodbyemoney.features.auth.domain.repository.AuthReposit
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.ViewModelProvider
 import com.nikolovlazar.goodbyemoney.features.auth.domain.models.User
 import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.errors.CustomError
 

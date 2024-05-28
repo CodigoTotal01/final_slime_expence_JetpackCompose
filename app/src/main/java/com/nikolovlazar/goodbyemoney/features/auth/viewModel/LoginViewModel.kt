@@ -1,13 +1,23 @@
 package com.nikolovlazar.goodbyemoney.features.auth.viewModel
 
 import android.util.Patterns
+import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.nikolovlazar.goodbyemoney.features.tracker.viewmodels.AddScreenState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlin.reflect.KSuspendFunction2
 
 
-class LoginViewModel: ViewModel() {
+
+
+
+class LoginViewModel(private val loginUserCallBack: (String, String) -> Unit) : ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email : LiveData<String> = _email
@@ -32,7 +42,7 @@ class LoginViewModel: ViewModel() {
 
 
     fun onFormSubmit(){
-//        loginUserCallBack(_email.value!!, _password.value!!)
+        loginUserCallBack(_email.value!!, _password.value!!)
     }
     suspend fun onLoginSelected() {
         _isLoading.value = true
@@ -42,5 +52,3 @@ class LoginViewModel: ViewModel() {
 
 
 }
-
-

@@ -36,17 +36,32 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nikolovlazar.goodbyemoney.R
+import com.nikolovlazar.goodbyemoney.features.auth.domain.repository.AuthRepository
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.KeyValueStorageService
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit, vm: LoginViewModel = viewModel()) {
+fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
+
+    val  vm = viewModel<LoginViewModel>(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return LoginViewModel( loginUserCallBack = { email, password ->
+                    println("Hola Mundo. Email: $email, Password: $password")
+                }) as T
+            }
+        }
+    )
 
     Scaffold(
         topBar = {
@@ -121,6 +136,7 @@ fun BodyLogin(modifier: Modifier, loginViewModel: LoginViewModel, onLoginSuccess
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
             onLoginSuccess() //
+            loginViewModel.onFormSubmit();
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
@@ -128,6 +144,7 @@ fun BodyLogin(modifier: Modifier, loginViewModel: LoginViewModel, onLoginSuccess
 
 @Composable
 fun LoginButton(loginEnable: Boolean, onLoginClicked: () -> Unit) {
+
     val context = LocalContext.current
 
     Button(
