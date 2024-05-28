@@ -32,6 +32,7 @@ class AuthDataSourceImpl : AuthDataSource() {
     override suspend fun login(email: String, password: String): User {
         return try {
             val credentials = mapOf("email" to email, "password" to password)
+            print(credentials)
             val response = authService.login(credentials).execute()
             if (response.isSuccessful) {
                 val user = UserMapper.userJsonToEntity(response.body()!!)

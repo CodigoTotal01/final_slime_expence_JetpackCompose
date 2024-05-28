@@ -7,12 +7,12 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 //Definir servicio de retrofit
 interface AuthService {
-    @GET("/auth/check-status")
+    @GET("auth/check-status")
     fun checkAuthStatus(@Header("Authorization") token: String): Call<Map<String, Any>>
 
-    @POST("/auth/login")
+    @POST("auth/login")
     fun login(@Body credentials: Map<String, String>): Call<Map<String, Any>>
 
-    @POST("/auth/register")
+    @POST("auth/register")
     fun register(@Body userData: Map<String, String>): Call<Map<String, Any>>
 }

@@ -1,5 +1,4 @@
 package com.nikolovlazar.goodbyemoney.features.auth.pages
-
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.foundation.Image
@@ -43,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nikolovlazar.goodbyemoney.R
 import com.nikolovlazar.goodbyemoney.features.auth.domain.repository.AuthRepository
+import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.repositories.AuthRepositoryImpl
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModel
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.KeyValueStorageService
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
@@ -52,12 +52,12 @@ import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
-
-    val  vm = viewModel<LoginViewModel>(
+    val vm = viewModel<LoginViewModel>(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return LoginViewModel( loginUserCallBack = { email, password ->
-                    println("Hola Mundo. Email: $email, Password: $password")
+                        AuthRepositoryImpl().login(email, password)
+
                 }) as T
             }
         }
@@ -135,23 +135,20 @@ fun BodyLogin(modifier: Modifier, loginViewModel: LoginViewModel, onLoginSuccess
         }
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
-            onLoginSuccess() //
             loginViewModel.onFormSubmit();
+            onLoginSuccess() //
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean, onLoginClicked: () -> Unit) {
+fun LoginButton(loginEnable: Boolean, onLoginClicked: () -> Unit){
 
     val context = LocalContext.current
 
     Button(
-        onClick = { onLoginClicked(
-
-
-        ) },
+        onClick = { onLoginClicked() },
         enabled = loginEnable,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
@@ -164,7 +161,6 @@ fun LoginButton(loginEnable: Boolean, onLoginClicked: () -> Unit) {
         Text(text = "Log In")
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

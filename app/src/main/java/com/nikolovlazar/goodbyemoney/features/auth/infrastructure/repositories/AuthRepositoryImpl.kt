@@ -12,6 +12,7 @@ class AuthRepositoryImpl(private val dataSource: AuthDataSource = AuthDataSource
     }
 
     override suspend fun login(email: String, password: String): User {
+        print("loguqado con exito")
         return dataSource.login(email, password)
     }
 
