@@ -6,13 +6,17 @@ import com.nikolovlazar.goodbyemoney.features.auth.domain.repository.AuthReposit
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nikolovlazar.goodbyemoney.features.auth.domain.models.User
 import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.errors.CustomError
+import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.repositories.AuthRepositoryImpl
 
 class KeyValueStorageService(context: Context) {
 
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
 
     fun setToken(token: String) {
         with(sharedPreferences.edit()) {
@@ -32,6 +36,7 @@ class KeyValueStorageService(context: Context) {
         }
     }
 }
+
 enum class AuthStatus {
     CHECKING,
     AUTHENTICATED,
@@ -53,6 +58,7 @@ class AuthViewModel(
     val authState = MutableLiveData(AuthState())
 
     suspend fun loginUser(email: String, password: String) {
+
         try {
             val user = authRepository.login(email, password)
             setLoggedUser(user)
@@ -72,7 +78,7 @@ class AuthViewModel(
                 user = user,
                 errorMessage = ""
             )
-        }  catch (e: CustomError) {
+        } catch (e: CustomError) {
             logout(e.message)
         } catch (e: Exception) {
             logout("Error no controlado - register ")
@@ -112,4 +118,18 @@ class AuthViewModel(
     }
 
 
+}
+
+class AuthViewModelFactory(
+    private val authRepository: AuthRepository,
+    private val context: Context
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+            var authRepository = AuthRepositoryImpl();
+            val keyValueStorageService = KeyValueStorageService(context);
+            return AuthViewModel(authRepository, keyValueStorageService) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

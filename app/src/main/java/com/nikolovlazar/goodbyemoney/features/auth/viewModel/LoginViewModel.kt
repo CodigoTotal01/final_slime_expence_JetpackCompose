@@ -1,17 +1,20 @@
 package com.nikolovlazar.goodbyemoney.features.auth.viewModel
 
+import android.content.Context
 import android.util.Patterns
 import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewModelScope
 import com.nikolovlazar.goodbyemoney.features.tracker.viewmodels.AddScreenState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction2
+import android.util.Log
 
 
 class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> Unit) :
@@ -50,6 +53,26 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
         delay(4000)
         _isLoading.value = false
     }
+}
+
+class LoginViewModelFactory(
+    private val authViewModelFactory: AuthViewModelFactory,
+    private val context: Context
+) : ViewModelProvider.Factory {
 
 
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+            // Crear una instancia de AuthViewModel usando AuthViewModelFactory
+            val authViewModel = ViewModelProvider(ViewModelStore(), authViewModelFactory).get(AuthViewModel::class.java)
+
+            // Definir el callback usando la instancia de AuthViewModel
+            val loginUserCallBack: suspend (String, String) -> Unit = { email, password ->
+                authViewModel.loginUser(email, password)
+            }
+
+            return LoginViewModel(loginUserCallBack) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

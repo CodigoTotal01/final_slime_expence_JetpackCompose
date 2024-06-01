@@ -44,23 +44,34 @@ import com.nikolovlazar.goodbyemoney.R
 import com.nikolovlazar.goodbyemoney.features.auth.domain.repository.AuthRepository
 import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.repositories.AuthRepositoryImpl
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModelFactory
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.KeyValueStorageService
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModelFactory
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
-    val vm = viewModel<LoginViewModel>(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return LoginViewModel( loginUserCallBack = { email, password ->
-                        AuthRepositoryImpl().login(email, password)
 
-                }) as T
-            }
-        }
+    // Obtener el contexto
+    val context = LocalContext.current
+
+    // Inicializar dependencias necesarias
+    val authRepository = AuthRepositoryImpl()
+    val keyValueStorageService = KeyValueStorageService(context)
+
+    // Crear instancia de AuthViewModelFactory
+    val authViewModelFactory = AuthViewModelFactory(authRepository, context);
+
+    // Crear instancia de LoginViewModelFactory
+    val loginViewModelFactory = LoginViewModelFactory(authViewModelFactory, context)
+
+
+    // Obtener instancia de LoginViewModel usando la fábrica
+    val vm: LoginViewModel = viewModel(
+        factory = loginViewModelFactory
     )
 
     Scaffold(
@@ -200,7 +211,7 @@ fun PasswordTextArea(password: String, onTextChanged: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailTextArea(email: String, onTextChanged: (String) -> Unit) {
+fun EmailTextArea(email: String =  "test1@google.com", onTextChanged: (String) -> Unit) {
     TextField(
         value = email,
         onValueChange = { onTextChanged(it) },
