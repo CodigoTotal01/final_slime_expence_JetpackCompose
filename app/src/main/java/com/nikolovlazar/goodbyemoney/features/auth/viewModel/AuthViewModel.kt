@@ -26,7 +26,7 @@ class KeyValueStorageService(context: Context) {
     }
 
     fun getToken(): String? {
-        return sharedPreferences.getString("token", null)
+        return sharedPreferences.getString("token", "")
     }
 
     fun removeToken() {

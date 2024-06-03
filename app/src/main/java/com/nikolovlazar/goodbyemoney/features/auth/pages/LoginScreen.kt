@@ -60,6 +60,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 
     // Inicializar dependencias necesarias
     val authRepository = AuthRepositoryImpl()
+
     val keyValueStorageService = KeyValueStorageService(context)
 
     // Crear instancia de AuthViewModelFactory
@@ -147,6 +148,8 @@ fun BodyLogin(modifier: Modifier, loginViewModel: LoginViewModel, onLoginSuccess
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
             loginViewModel.onFormSubmit();
+
+
             onLoginSuccess() //
         }
         Spacer(modifier = Modifier.size(16.dp))
