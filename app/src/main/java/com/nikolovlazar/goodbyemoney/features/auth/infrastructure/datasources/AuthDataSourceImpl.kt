@@ -22,7 +22,20 @@ class AuthDataSourceImpl : AuthDataSource() {
 
     override suspend fun checkAuthStatus(token: String): User {
         return try {
-            val response = authService.checkAuthStatus("Bearer $token").execute()
+            // Utilizar una corrutina para esperar la respuesta de la llamada asíncrona
+            val response = suspendCoroutine<Response<Map<String, Any>>> { continuation ->
+                authService.checkAuthStatus("Bearer $token").enqueue(object : Callback<Map<String, Any>> {
+                    override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                        continuation.resume(response)
+                    }
+
+                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                        continuation.resumeWithException(t)
+                    }
+                })
+            }
+
+            // Manejar la respuesta obtenida
             if (response.isSuccessful) {
                 val user = UserMapper.userJsonToEntity(response.body()!!)
                 user
@@ -73,7 +86,21 @@ class AuthDataSourceImpl : AuthDataSource() {
     override suspend fun register(email: String, password: String, fullName: String): User {
         return try {
             val registrationData = mapOf("email" to email, "password" to password, "fullName" to fullName)
-            val response = authService.register(registrationData).execute()
+
+            // Utilizar una corrutina para esperar la respuesta de la llamada asíncrona
+            val response = suspendCoroutine<Response<Map<String, Any>>> { continuation ->
+                authService.register(registrationData).enqueue(object : Callback<Map<String, Any>> {
+                    override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
+                        continuation.resume(response)
+                    }
+
+                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                        continuation.resumeWithException(t)
+                    }
+                })
+            }
+
+            // Manejar la respuesta obtenida
             if (response.isSuccessful) {
                 val user = UserMapper.userJsonToEntity(response.body()!!)
                 user
@@ -88,4 +115,5 @@ class AuthDataSourceImpl : AuthDataSource() {
             throw Exception()
         }
     }
+
 }
