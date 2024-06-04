@@ -48,6 +48,9 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
         viewModelScope.launch {
             try {
                 loginUserCallBack(email.value!!, password.value!!)
+                authState.value = AuthState(
+                    authStatus = AuthStatus.AUTHENTICATED,
+                )
             } catch (e: Exception) {
                 authState.value = AuthState(
                     authStatus = AuthStatus.NOT_AUTHENTICATED,

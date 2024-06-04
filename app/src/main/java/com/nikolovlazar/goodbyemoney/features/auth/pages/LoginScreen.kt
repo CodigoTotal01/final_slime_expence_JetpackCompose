@@ -71,9 +71,9 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 
     val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
     val snackbarHostState = remember { SnackbarHostState() }
-    val authState by loginViewModel.authState.observeAsState()
-    val coroutineScope = rememberCoroutineScope()
     var isLoginSuccessful by remember { mutableStateOf(false) }
+
+    //ya vemos otro dia, pero la cosa que el logi ndbe ser ascertado
 
 
     Scaffold(
@@ -86,7 +86,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                 .padding(8.dp)
         ) {
             HeaderForm(Modifier.align(Alignment.TopEnd))
-            BodyLogin(Modifier.align(Alignment.Center), loginViewModel, onLoginSuccess)
+            BodyLogin(Modifier.align(Alignment.Center), loginViewModel, onLoginSuccess, isLoginSuccessful)
             FooterLogin(Modifier.align(Alignment.BottomCenter), navController)
         }
     }
@@ -96,7 +96,8 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 fun BodyLogin(
     modifier: Modifier,
     loginViewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    isLoginSuccessful: Boolean
 ) {
     val email: String by loginViewModel.email.observeAsState(initial = "")
     val password: String by loginViewModel.password.observeAsState(initial = "")
@@ -115,7 +116,7 @@ fun BodyLogin(
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
             loginViewModel.onFormSubmit()
-            onLoginSuccess();
+            if(isLoginSuccessful) onLoginSuccess();
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
