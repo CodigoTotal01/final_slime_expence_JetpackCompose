@@ -48,8 +48,6 @@ fun NavGraph(navController: NavHostController, innerPadding: PaddingValues) {
                 navController.navigate("expenses") {
                     popUpTo(0);
                 }
-
-
             })
         }
 

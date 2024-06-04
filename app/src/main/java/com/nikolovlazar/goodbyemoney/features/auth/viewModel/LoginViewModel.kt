@@ -29,6 +29,8 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
     private val _isLoginEnable = MutableLiveData<Boolean>()
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
 
+    val authState = MutableLiveData<AuthState>()
+
     fun onLoginChanged(email: String, password: String) {
         _email.value = email
         _password.value = password
@@ -44,7 +46,14 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
 
     fun onFormSubmit() {
         viewModelScope.launch {
-            loginUserCallBack(_email.value!!, _password.value!!)
+            try {
+                loginUserCallBack(email.value!!, password.value!!)
+            } catch (e: Exception) {
+                authState.value = AuthState(
+                    authStatus = AuthStatus.NOT_AUTHENTICATED,
+                    errorMessage = "Error no controlado - login"
+                )
+            }
         }
     }
 

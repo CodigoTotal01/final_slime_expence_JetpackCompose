@@ -8,10 +8,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nikolovlazar.goodbyemoney.features.auth.domain.models.User
 import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.errors.CustomError
 import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.repositories.AuthRepositoryImpl
+import kotlinx.coroutines.launch
 
 class KeyValueStorageService(context: Context) {
 
@@ -43,7 +45,6 @@ enum class AuthStatus {
     NOT_AUTHENTICATED
 }
 
-
 data class AuthState(
     var authStatus: AuthStatus = AuthStatus.CHECKING,
     var user: User? = null,
@@ -57,67 +58,46 @@ class AuthViewModel(
 
     val authState = MutableLiveData(AuthState())
 
-    suspend fun loginUser(email: String, password: String) {
-
-        try {
-            val user = authRepository.login(email, password)
-            setLoggedUser(user)
-        } catch (e: CustomError) {
-            logout(e.message)
-        } catch (e: Exception) {
-            logout("Error no controlado - login ")
-        }
-    }
-
-    suspend fun register(email: String, password: String, fullName: String) {
-        try {
-            val user = authRepository.register(email, password, fullName)
-            keyValueStorageService.setToken(user.token)
-            authState.value = AuthState(
-                authStatus = AuthStatus.AUTHENTICATED,
-                user = user,
-                errorMessage = ""
-            )
-        } catch (e: CustomError) {
-            logout(e.message)
-        } catch (e: Exception) {
-            logout("Error no controlado - register ")
-        }
-    }
-
-    suspend fun checkAuthStatus() {
-        val token = keyValueStorageService.getToken()
-        if (token == null) {
-            logout()
-        } else {
+    fun loginUser(email: String, password: String) {
+        viewModelScope.launch {
             try {
-                val user = authRepository.checkAuthStatus(token)
+                val user = authRepository.login(email, password)
                 setLoggedUser(user)
+            } catch (e: CustomError) {
+                Log.d("CustomErrorAuthViewmodel", e.message.toString())
+                updateErrorState(e.message)
             } catch (e: Exception) {
-                logout()
+                Log.d("ErrorGeneral", e.message.toString())
+                updateErrorState("Error no controlado - login")
             }
         }
     }
 
     private fun setLoggedUser(user: User) {
-        keyValueStorageService.setToken(user.token)
         authState.value = AuthState(
             authStatus = AuthStatus.AUTHENTICATED,
             user = user,
             errorMessage = ""
         )
+        keyValueStorageService.setToken(user.token)
     }
 
-    fun logout(errorMessage: String? = null) {
-        keyValueStorageService.removeToken()
+    private fun updateErrorState(errorMessage: String) {
         authState.value = AuthState(
             authStatus = AuthStatus.NOT_AUTHENTICATED,
             user = null,
-            errorMessage = errorMessage ?: ""
+            errorMessage = errorMessage
         )
     }
 
-
+    fun logout(errorMessage: String) {
+        authState.value = AuthState(
+            authStatus = AuthStatus.NOT_AUTHENTICATED,
+            user = null,
+            errorMessage = errorMessage
+        )
+        keyValueStorageService.removeToken()
+    }
 }
 
 class AuthViewModelFactory(

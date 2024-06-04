@@ -1,6 +1,8 @@
 package com.nikolovlazar.goodbyemoney.features.auth.pages
+
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -49,36 +51,34 @@ import com.nikolovlazar.goodbyemoney.features.auth.viewModel.KeyValueStorageServ
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModelFactory
 
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthState
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthStatus
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
-
-    // Obtener el contexto
     val context = LocalContext.current
-
-    // Inicializar dependencias necesarias
     val authRepository = AuthRepositoryImpl()
-
     val keyValueStorageService = KeyValueStorageService(context)
-
-    // Crear instancia de AuthViewModelFactory
-    val authViewModelFactory = AuthViewModelFactory(authRepository, context);
-
-    // Crear instancia de LoginViewModelFactory
+    val authViewModelFactory = AuthViewModelFactory(authRepository, context)
     val loginViewModelFactory = LoginViewModelFactory(authViewModelFactory, context)
 
+    val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val authState by loginViewModel.authState.observeAsState()
+    val coroutineScope = rememberCoroutineScope()
+    var isLoginSuccessful by remember { mutableStateOf(false) }
 
-    // Obtener instancia de LoginViewModel usando la fábrica
-    val vm: LoginViewModel = viewModel(
-        factory = loginViewModelFactory
-    )
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Gestión de Gastos") })
-        }
+        topBar = { TopAppBar(title = { Text("Gestión de Gastos") }) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) {
         Box(
             Modifier
@@ -86,51 +86,18 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                 .padding(8.dp)
         ) {
             HeaderForm(Modifier.align(Alignment.TopEnd))
-            BodyLogin(Modifier.align(Alignment.Center), vm, onLoginSuccess)
+            BodyLogin(Modifier.align(Alignment.Center), loginViewModel, onLoginSuccess)
             FooterLogin(Modifier.align(Alignment.BottomCenter), navController)
         }
     }
-
-
 }
 
 @Composable
-fun FooterLogin(modifier: Modifier, navController: NavController) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Divider(
-            Modifier
-                .background(Color(0xFFF9F9F9))
-                .height(1.dp)
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.size(24.dp))
-        SignUp(navController)
-        Spacer(modifier = Modifier.size(24.dp))
-    }
-}
-
-//Pra ir al registro
-@Composable
-fun SignUp(navController: NavController) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        Text(
-            text = "No tienes una cuenta?",
-            fontSize = 12.sp,
-            color = Color(0xFFB5B5B5)
-        )
-        Text(
-            text = " Crear una",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF4EA8E9),
-            modifier = Modifier
-                .padding(start = 4.dp)
-                .clickable { navController.navigate("register") }
-        )
-    }
-}
-@Composable
-fun BodyLogin(modifier: Modifier, loginViewModel: LoginViewModel, onLoginSuccess: () -> Unit) {
+fun BodyLogin(
+    modifier: Modifier,
+    loginViewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit
+) {
     val email: String by loginViewModel.email.observeAsState(initial = "")
     val password: String by loginViewModel.password.observeAsState(initial = "")
     val isLoginEnable: Boolean by loginViewModel.isLoginEnable.observeAsState(initial = false)
@@ -147,20 +114,15 @@ fun BodyLogin(modifier: Modifier, loginViewModel: LoginViewModel, onLoginSuccess
         }
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
-            loginViewModel.onFormSubmit();
-
-
-            onLoginSuccess() //
+            loginViewModel.onFormSubmit()
+            onLoginSuccess();
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean, onLoginClicked: () -> Unit){
-
-    val context = LocalContext.current
-
+fun LoginButton(loginEnable: Boolean, onLoginClicked: () -> Unit) {
     Button(
         onClick = { onLoginClicked() },
         enabled = loginEnable,
@@ -186,8 +148,8 @@ fun PasswordTextArea(password: String, onTextChanged: (String) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Password") },
         colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.Black, // Color de texto para ambos estados, enfocado y sin enfocar
-            containerColor = Color.White, // Color de fondo para el estado sin enfocar
+            textColor = Color.Black,
+            containerColor = Color.White,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
@@ -214,7 +176,7 @@ fun PasswordTextArea(password: String, onTextChanged: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailTextArea(email: String =  "test1@google.com", onTextChanged: (String) -> Unit) {
+fun EmailTextArea(email: String = "test1@google.com", onTextChanged: (String) -> Unit) {
     TextField(
         value = email,
         onValueChange = { onTextChanged(it) },
@@ -224,8 +186,8 @@ fun EmailTextArea(email: String =  "test1@google.com", onTextChanged: (String) -
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.Black, // Color de texto para ambos estados, enfocado y sin enfocar
-            containerColor = Color.White, // Color de fondo para el estado sin enfocar
+            textColor = Color.Black,
+            containerColor = Color.White,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )
@@ -250,3 +212,39 @@ fun HeaderForm(modifier: Modifier) {
         modifier = modifier.clickable { activity.finish() }
     )
 }
+
+@Composable
+fun FooterLogin(modifier: Modifier, navController: NavController) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Divider(
+            Modifier
+                .background(Color(0xFFF9F9F9))
+                .height(1.dp)
+                .fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.size(24.dp))
+        SignUp(navController)
+        Spacer(modifier = Modifier.size(24.dp))
+    }
+}
+
+@Composable
+fun SignUp(navController: NavController) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Text(
+            text = "No tienes una cuenta?",
+            fontSize = 12.sp,
+            color = Color(0xFFB5B5B5)
+        )
+        Text(
+            text = " Crear una",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF4EA8E9),
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .clickable { navController.navigate("register") }
+        )
+    }
+}
+

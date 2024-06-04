@@ -55,7 +55,6 @@ class AuthDataSourceImpl : AuthDataSource() {
         return try {
             val credentials = mapOf("email" to email, "password" to password)
 
-            // Utilizar una corrutina para esperar la respuesta de la llamada asíncrona
             val response = suspendCoroutine<Response<Map<String, Any>>> { continuation ->
                 authService.login(credentials).enqueue(object : Callback<Map<String, Any>> {
                     override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
@@ -67,7 +66,6 @@ class AuthDataSourceImpl : AuthDataSource() {
                 })
             }
 
-            // Manejar la respuesta obtenida
             if (response.isSuccessful) {
                 val user = UserMapper.userJsonToEntity(response.body()!!)
                 Log.d("UserAIP", user.token)
@@ -79,10 +77,10 @@ class AuthDataSourceImpl : AuthDataSource() {
             Log.d("ConexionError", e.message.toString())
             throw CustomError("Revisar conexión a internet")
         } catch (e: Exception) {
-            throw Exception()
+            Log.d("GeneralError", e.message.toString())
+            throw CustomError(e.message ?: "Error no controlado")
         }
     }
-
     override suspend fun register(email: String, password: String, fullName: String): User {
         return try {
             val registrationData = mapOf("email" to email, "password" to password, "fullName" to fullName)
