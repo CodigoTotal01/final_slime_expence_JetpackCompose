@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,7 +46,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.nikolovlazar.goodbyemoney.R
+import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.repositories.AuthRepositoryImpl
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModelFactory
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.RegisterViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.RegisterViewModelFactory
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,9 +58,13 @@ import com.nikolovlazar.goodbyemoney.features.auth.viewModel.RegisterViewModel
 @Composable
 fun RegisterScreen(
     navController: NavController,
-    onRegisterSuccess: () -> Unit,
-    vm: RegisterViewModel = viewModel()
-) {
+    onRegisterSuccess: () -> Unit) {
+
+    val context = LocalContext.current
+    val authRepository = AuthRepositoryImpl()
+    val authViewModelFactory = AuthViewModelFactory(authRepository, context)
+    val registerViewModelFactory = RegisterViewModelFactory(authViewModelFactory, context)
+    val registerViewModel : RegisterViewModel = viewModel(factory = registerViewModelFactory)
 
     Scaffold(
         topBar = {
@@ -68,7 +77,7 @@ fun RegisterScreen(
                 .padding(8.dp)
         ) {
             HeaderForm(Modifier.align(Alignment.TopEnd))
-            BodyRegister(Modifier.align(Alignment.Center), vm, onRegisterSuccess)
+            BodyRegister(Modifier.align(Alignment.Center), registerViewModel, onRegisterSuccess)
             FooterRegister(Modifier.align(Alignment.BottomCenter), navController)
         }
     }
@@ -128,6 +137,7 @@ fun BodyRegister(
         Spacer(modifier = Modifier.size(16.dp))
 
         RegisterButton(isRegisterEnabled) {
+            registerViewModel.onFormSubmit()
             onRegisterSuccess()
         }
         Spacer(modifier = Modifier.size(16.dp))

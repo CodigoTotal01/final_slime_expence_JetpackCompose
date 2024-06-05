@@ -69,26 +69,12 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 
 
     val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
-    val authState by authViewModel.authState.observeAsState(AuthState())
+   //inutilizable val authState by authViewModel.authState.observeAsState(AuthState())
 
     val loginViewModelFactory = LoginViewModelFactory(authViewModelFactory, context)
     val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
 
-    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    // no funciona no actualiza los cambios
-    // Observa los cambios en authState
-    LaunchedEffect(key1 = authState.authStatus, key2 = authState.errorMessage) {
-        Log.d("Nojoda", "authState: $authState")
-        if (authState.authStatus == AuthStatus.AUTHENTICATED) {
-            onLoginSuccess()
-        } else if (authState.authStatus == AuthStatus.NOT_AUTHENTICATED && authState.errorMessage.isNotEmpty()) {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(authState.errorMessage)
-            }
-        }
-    }
 
 
     Scaffold(
@@ -101,7 +87,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                 .padding(8.dp)
         ) {
             HeaderForm(Modifier.align(Alignment.TopEnd))
-            BodyLogin(Modifier.align(Alignment.Center), loginViewModel)
+            BodyLogin(Modifier.align(Alignment.Center), loginViewModel, onLoginSuccess)
             FooterLogin(Modifier.align(Alignment.BottomCenter), navController)
         }
     }
@@ -110,7 +96,8 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 @Composable
 fun BodyLogin(
     modifier: Modifier,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit
 ) {
     val email: String by loginViewModel.email.observeAsState(initial = "")
     val password: String by loginViewModel.password.observeAsState(initial = "")
@@ -129,6 +116,7 @@ fun BodyLogin(
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
             loginViewModel.onFormSubmit()
+            onLoginSuccess();
         }
         Spacer(modifier = Modifier.size(16.dp))
     }

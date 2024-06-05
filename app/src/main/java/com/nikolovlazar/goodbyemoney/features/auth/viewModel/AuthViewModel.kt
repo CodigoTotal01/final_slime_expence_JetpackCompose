@@ -89,7 +89,21 @@ class AuthViewModel(
             }
         }
     }
-
+    fun registerUser(email: String, password: String, fullName: String) {
+        _authState.value = _authState.value?.copyWith(authStatus = AuthStatus.CHECKING)
+        viewModelScope.launch {
+            try {
+                val user = authRepository.register(email, password, fullName)
+                setLoggedUser(user)
+            } catch (e: CustomError) {
+                Log.d("CustomErrorAuthViewModel", e.message.toString())
+                updateErrorState(e.message)
+            } catch (e: Exception) {
+                Log.d("ErrorGeneral", e.message.toString())
+                updateErrorState("Error no controlado - registro")
+            }
+        }
+    }
     private fun setLoggedUser(user: User) {
         _authState.value = AuthState(
             authStatus = AuthStatus.AUTHENTICATED,

@@ -17,8 +17,8 @@ import kotlin.reflect.KSuspendFunction2
 import android.util.Log
 
 
-
-class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> Unit) : ViewModel() {
+class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> Unit) :
+    ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -29,8 +29,6 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
     private val _isLoginEnable = MutableLiveData<Boolean>()
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
 
-    private val _authState = MutableLiveData<AuthState>()
-    val authState: LiveData<AuthState> = _authState
 
     fun onLoginChanged(email: String, password: String) {
         _email.value = email
@@ -42,17 +40,8 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
         Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 4
 
     fun onFormSubmit() {
-        _authState.value = AuthState(authStatus = AuthStatus.CHECKING)
         viewModelScope.launch {
-            try {
-                loginUserCallBack(email.value!!, password.value!!)
-                _authState.value = AuthState(authStatus = AuthStatus.AUTHENTICATED)
-            } catch (e: Exception) {
-                _authState.value = AuthState(
-                    authStatus = AuthStatus.NOT_AUTHENTICATED,
-                    errorMessage = "Error no controlado - login"
-                )
-            }
+            loginUserCallBack(email.value!!, password.value!!)
         }
     }
 }
@@ -66,7 +55,10 @@ class LoginViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             // Crear una instancia de AuthViewModel usando AuthViewModelFactory
-            val authViewModel = ViewModelProvider(ViewModelStore(), authViewModelFactory).get(AuthViewModel::class.java)
+            val authViewModel = ViewModelProvider(
+                ViewModelStore(),
+                authViewModelFactory
+            ).get(AuthViewModel::class.java)
 
             // Definir el callback usando la instancia de AuthViewModel
             val loginUserCallBack: suspend (String, String) -> Unit = { email, password ->
