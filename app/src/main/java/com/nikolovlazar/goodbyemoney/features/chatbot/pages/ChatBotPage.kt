@@ -41,14 +41,25 @@ import com.nikolovlazar.goodbyemoney.features.chatbot.viewModel.ChatViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-private val uriState = MutableStateFlow("")
 
+
+private val uriState = MutableStateFlow("")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen() {
-    val chaViewModel = viewModel<ChatViewModel>()
-    val chatState = chaViewModel.chatState.collectAsState().value
+    val chatViewModel = viewModel<ChatViewModel>()
+    val chatState = chatViewModel.chatState.collectAsState().value
+
+    val context = LocalContext.current
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let {
+            uriState.value = it.toString()
+        }
+    }
 
     val bitmap = getBitmap()
 
@@ -100,7 +111,9 @@ fun ChatScreen() {
                     modifier = Modifier
                         .size(40.dp)
                         .clickable {
-                            // Implementa el selector de imágenes aquí
+                            imagePicker.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
                         },
                     imageVector = Icons.Rounded.AddPhotoAlternate,
                     contentDescription = "Add Photo",
@@ -115,7 +128,7 @@ fun ChatScreen() {
                     .weight(1f),
                 value = chatState.prompt,
                 onValueChange = {
-                    chaViewModel.onEvent(ChatUiEvent.UpdatePrompt(it))
+                    chatViewModel.onEvent(ChatUiEvent.UpdatePrompt(it))
                 },
                 placeholder = {
                     Text(text = "Type a prompt")
@@ -128,7 +141,7 @@ fun ChatScreen() {
                 modifier = Modifier
                     .size(40.dp)
                     .clickable {
-                        chaViewModel.onEvent(ChatUiEvent.SendPrompt(chatState.prompt, bitmap))
+                        chatViewModel.onEvent(ChatUiEvent.SendPrompt(chatState.prompt, bitmap))
                         uriState.update { "" }
                     },
                 imageVector = Icons.Rounded.Send,
@@ -183,7 +196,7 @@ fun ModelChatItem(response: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color.Cyan)
+                .background(Color.Green)
                 .padding(16.dp),
             text = response,
             fontSize = 17.sp,
@@ -210,8 +223,6 @@ private fun getBitmap(): Bitmap? {
 
     return null
 }
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
