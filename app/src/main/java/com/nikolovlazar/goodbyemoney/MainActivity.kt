@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
           "settings/categories" -> false
           "login" -> false
           "register" -> false
-
+          "chatbot" -> false
           else -> true
         }
 
@@ -125,6 +125,20 @@ fun NavOptionsTracker(backStackEntry: NavBackStackEntry? , navController: NavCon
         Icon(
           painterResource(id = R.drawable.settings_outlined),
           contentDescription = "Settings"
+        )
+      }
+    )
+    NavigationBarItem(
+      selected = backStackEntry?.destination?.route?.startsWith("chatbot")
+        ?: false,
+      onClick = { navController.navigate("chatbot") },
+      label = {
+        Text("ChatBot")
+      },
+      icon = {
+        Icon(
+          painterResource(id = R.drawable.chatbot),
+          contentDescription = "Chatbot"
         )
       }
     )

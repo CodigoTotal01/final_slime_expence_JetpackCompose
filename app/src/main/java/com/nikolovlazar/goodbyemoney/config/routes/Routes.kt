@@ -16,6 +16,7 @@ import com.nikolovlazar.goodbyemoney.features.auth.pages.LoginScreen
 import com.nikolovlazar.goodbyemoney.features.auth.pages.RegisterScreen
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModelFactory
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.KeyValueStorageService
+import com.nikolovlazar.goodbyemoney.features.chatbot.pages.ChatBotPage
 import com.nikolovlazar.goodbyemoney.features.tracker.pages.Add
 import com.nikolovlazar.goodbyemoney.features.tracker.pages.Categories
 import com.nikolovlazar.goodbyemoney.features.tracker.pages.Expenses
@@ -103,6 +104,10 @@ fun NavGraph(navController: NavHostController, innerPadding: PaddingValues) {
             ) {
                 Categories(navController)
             }
+        }
+
+        composable("chatbot") {
+            ChatBotPage(navController);
         }
 
     }
