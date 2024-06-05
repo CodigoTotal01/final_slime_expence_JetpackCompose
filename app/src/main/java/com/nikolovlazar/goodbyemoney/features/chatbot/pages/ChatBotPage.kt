@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -17,16 +18,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
@@ -38,10 +40,12 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.nikolovlazar.goodbyemoney.features.chatbot.utils.ChatUiEvent
 import com.nikolovlazar.goodbyemoney.features.chatbot.viewModel.ChatViewModel
+import com.nikolovlazar.goodbyemoney.ui.theme.FillTertiary
+import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
+import com.nikolovlazar.goodbyemoney.ui.theme.SystemGray04
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-
-
+import kotlinx.coroutines.launch
 
 private val uriState = MutableStateFlow("")
 
@@ -61,7 +65,29 @@ fun ChatScreen() {
         }
     }
 
+    var showDialog by remember { mutableStateOf(false) }
     val bitmap = getBitmap()
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    uriState.value = ""
+                    showDialog = false
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("No")
+                }
+            },
+            title = { Text("Confirm Deletion") },
+            text = { Text("Do you want to delete the selected image?") }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -100,7 +126,14 @@ fun ChatScreen() {
                         modifier = Modifier
                             .size(40.dp)
                             .padding(bottom = 2.dp)
-                            .clip(RoundedCornerShape(6.dp)),
+                            .clip(RoundedCornerShape(6.dp))
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onLongPress = {
+                                        showDialog = true
+                                    }
+                                )
+                            },
                         contentDescription = "picked image",
                         contentScale = ContentScale.Crop,
                         bitmap = it.asImageBitmap()
@@ -117,7 +150,7 @@ fun ChatScreen() {
                         },
                     imageVector = Icons.Rounded.AddPhotoAlternate,
                     contentDescription = "Add Photo",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = LabelSecondary
                 )
             }
 
@@ -132,7 +165,14 @@ fun ChatScreen() {
                 },
                 placeholder = {
                     Text(text = "Type a prompt")
-                }
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = SystemGray04,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    placeholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textColor = Color.White // Aquí aseguras que el texto sea blanco
+                )
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -146,11 +186,9 @@ fun ChatScreen() {
                     },
                 imageVector = Icons.Rounded.Send,
                 contentDescription = "Send prompt",
-                tint = MaterialTheme.colorScheme.primary
+                tint = LabelSecondary
             )
-
         }
-
     }
 }
 
@@ -159,7 +197,6 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
     Column(
         modifier = Modifier.padding(start = 100.dp, bottom = 16.dp)
     ) {
-
         bitmap?.let {
             Image(
                 modifier = Modifier
@@ -177,13 +214,12 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primary)
+                .background(LabelSecondary)
                 .padding(16.dp),
-            text = prompt,
+            text = formatText(prompt),
             fontSize = 17.sp,
             color = MaterialTheme.colorScheme.onPrimary
         )
-
     }
 }
 
@@ -196,14 +232,42 @@ fun ModelChatItem(response: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color.Green)
+                .background(MaterialTheme.colorScheme.secondary)
                 .padding(16.dp),
-            text = response,
+            text = formatText(response),
             fontSize = 17.sp,
-            color = MaterialTheme.colorScheme.onPrimary
+            color = MaterialTheme.colorScheme.onSecondary
         )
-
     }
+}
+
+@Composable
+fun formatText(text: String): AnnotatedString {
+    val parts = text.split("\n")
+    val annotatedString = buildAnnotatedString {
+        parts.forEach { line ->
+            when {
+                line.startsWith("***") -> {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)) {
+                        append(line.removePrefix("***").trim())
+                    }
+                }
+                line.startsWith("**") -> {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp)) {
+                        append(line.removePrefix("**").trim())
+                    }
+                }
+                line.startsWith("*") -> {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                        append(line.removePrefix("*").trim())
+                    }
+                }
+                else -> append(line)
+            }
+            append("\n")
+        }
+    }
+    return annotatedString
 }
 
 @Composable
@@ -223,24 +287,30 @@ private fun getBitmap(): Bitmap? {
 
     return null
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ChatBotPage (
+fun ChatBotPage(
     navController: NavController,
-){
+) {
     Scaffold(
-//        topBar = {
-//            TopAppBar(title = { Text("CHATBOT") })
-//        }
-    ) {
+        topBar = {
+            SmallTopAppBar(
+                title = { Text("ChatBot Manager Money") },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = FillTertiary,
+                    titleContentColor = FillTertiary
+                )
+            )
+        }
+    ) { paddingValues ->
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(paddingValues)
         ) {
             ChatScreen()
-            }
+        }
     }
 }
-
