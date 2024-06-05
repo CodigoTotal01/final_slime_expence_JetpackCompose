@@ -65,20 +65,35 @@ import kotlinx.coroutines.launch
 fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
     val context = LocalContext.current
     val authRepository = AuthRepositoryImpl()
-    val keyValueStorageService = KeyValueStorageService(context)
     val authViewModelFactory = AuthViewModelFactory(authRepository, context)
+
+
+    val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
+    val authState by authViewModel.authState.observeAsState(AuthState())
+
     val loginViewModelFactory = LoginViewModelFactory(authViewModelFactory, context)
-
     val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
-    val snackbarHostState = remember { SnackbarHostState() }
-    var isLoginSuccessful by remember { mutableStateOf(false) }
 
-    //ya vemos otro dia, pero la cosa que el logi ndbe ser ascertado
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // no funciona no actualiza los cambios
+    // Observa los cambios en authState
+    LaunchedEffect(key1 = authState.authStatus, key2 = authState.errorMessage) {
+        Log.d("Nojoda", "authState: $authState")
+        if (authState.authStatus == AuthStatus.AUTHENTICATED) {
+            onLoginSuccess()
+        } else if (authState.authStatus == AuthStatus.NOT_AUTHENTICATED && authState.errorMessage.isNotEmpty()) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(authState.errorMessage)
+            }
+        }
+    }
 
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Gestión de Gastos") }) },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         Box(
             Modifier
@@ -86,7 +101,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                 .padding(8.dp)
         ) {
             HeaderForm(Modifier.align(Alignment.TopEnd))
-            BodyLogin(Modifier.align(Alignment.Center), loginViewModel, onLoginSuccess, isLoginSuccessful)
+            BodyLogin(Modifier.align(Alignment.Center), loginViewModel)
             FooterLogin(Modifier.align(Alignment.BottomCenter), navController)
         }
     }
@@ -95,9 +110,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 @Composable
 fun BodyLogin(
     modifier: Modifier,
-    loginViewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit,
-    isLoginSuccessful: Boolean
+    loginViewModel: LoginViewModel
 ) {
     val email: String by loginViewModel.email.observeAsState(initial = "")
     val password: String by loginViewModel.password.observeAsState(initial = "")
@@ -116,12 +129,10 @@ fun BodyLogin(
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
             loginViewModel.onFormSubmit()
-            if(isLoginSuccessful) onLoginSuccess();
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
 }
-
 @Composable
 fun LoginButton(loginEnable: Boolean, onLoginClicked: () -> Unit) {
     Button(

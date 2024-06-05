@@ -17,8 +17,8 @@ import kotlin.reflect.KSuspendFunction2
 import android.util.Log
 
 
-class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> Unit) :
-    ViewModel() {
+
+class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> Unit) : ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -29,7 +29,8 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
     private val _isLoginEnable = MutableLiveData<Boolean>()
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
 
-    val authState = MutableLiveData<AuthState>()
+    private val _authState = MutableLiveData<AuthState>()
+    val authState: LiveData<AuthState> = _authState
 
     fun onLoginChanged(email: String, password: String) {
         _email.value = email
@@ -37,33 +38,22 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
         _isLoginEnable.value = enableLogin(email, password)
     }
 
-    fun enableLogin(email: String, password: String) =
+    private fun enableLogin(email: String, password: String) =
         Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 4
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
-
     fun onFormSubmit() {
+        _authState.value = AuthState(authStatus = AuthStatus.CHECKING)
         viewModelScope.launch {
             try {
                 loginUserCallBack(email.value!!, password.value!!)
-                authState.value = AuthState(
-                    authStatus = AuthStatus.AUTHENTICATED,
-                )
+                _authState.value = AuthState(authStatus = AuthStatus.AUTHENTICATED)
             } catch (e: Exception) {
-                authState.value = AuthState(
+                _authState.value = AuthState(
                     authStatus = AuthStatus.NOT_AUTHENTICATED,
                     errorMessage = "Error no controlado - login"
                 )
             }
         }
-    }
-
-    suspend fun onLoginSelected() {
-        _isLoading.value = true
-        delay(4000)
-        _isLoading.value = false
     }
 }
 
