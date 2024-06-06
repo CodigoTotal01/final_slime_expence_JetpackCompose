@@ -65,8 +65,6 @@ fun ChatScreen() {
     val chatState = chatViewModel.chatState.collectAsState().value
     val isProcessing by chatViewModel.isProcessing.observeAsState(initial = false)
 
-    val context = LocalContext.current
-
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -278,7 +276,7 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(SystemGray04)
-                .padding(16.dp),
+                .padding(end = 16.dp, start = 16.dp, top = 16.dp, bottom = 0.dp),
             text = formatText(prompt),
             fontSize = 17.sp,
             color = MaterialTheme.colorScheme.onPrimary
@@ -296,7 +294,7 @@ fun ModelChatItem(response: String) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(Primary)
-                .padding(16.dp),
+                .padding(end = 16.dp, start = 16.dp, top = 16.dp, bottom = 0.dp),
             text = formatText(response),
             fontSize = 17.sp,
             color = MaterialTheme.colorScheme.onSecondary
