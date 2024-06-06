@@ -6,6 +6,12 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,12 +19,14 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +50,7 @@ import com.nikolovlazar.goodbyemoney.features.chatbot.utils.ChatUiEvent
 import com.nikolovlazar.goodbyemoney.features.chatbot.viewModel.ChatViewModel
 import com.nikolovlazar.goodbyemoney.ui.theme.FillTertiary
 import com.nikolovlazar.goodbyemoney.ui.theme.LabelSecondary
+import com.nikolovlazar.goodbyemoney.ui.theme.Primary
 import com.nikolovlazar.goodbyemoney.ui.theme.SystemGray04
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -54,6 +63,7 @@ private val uriState = MutableStateFlow("")
 fun ChatScreen() {
     val chatViewModel = viewModel<ChatViewModel>()
     val chatState = chatViewModel.chatState.collectAsState().value
+    val isProcessing by chatViewModel.isProcessing.observeAsState(initial = false)
 
     val context = LocalContext.current
 
@@ -103,7 +113,9 @@ fun ChatScreen() {
             reverseLayout = true
         ) {
             itemsIndexed(chatState.chatList) { index, chat ->
-                if (chat.isFromUser) {
+                if (chat.isLoading) {
+                    ThreeDotsAnimation()
+                } else if (chat.isFromUser) {
                     UserChatItem(
                         prompt = chat.prompt, bitmap = chat.bitmap
                     )
@@ -189,9 +201,60 @@ fun ChatScreen() {
                 tint = LabelSecondary
             )
         }
+        if (isProcessing) {
+            ThreeDotsAnimation()
+        }
     }
 }
+@Composable
+fun ThreeDotsAnimation() {
+    val transition = rememberInfiniteTransition()
+    val dot1 = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    val dot2 = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, delayMillis = 200, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    val dot3 = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, delayMillis = 400, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
 
+    Row(
+        horizontalArrangement = Arrangement.Start, // Alinea a la izquierda
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 48.dp) // Agrega un margen en la parte inferior
+    ) {
+        Dot(opacity = dot1.value)
+        Spacer(modifier = Modifier.width(4.dp))
+        Dot(opacity = dot2.value)
+        Spacer(modifier = Modifier.width(4.dp))
+        Dot(opacity = dot3.value)
+    }
+}
+@Composable
+fun Dot(opacity: Float) {
+    Box(
+        modifier = Modifier
+            .size(12.dp)
+            .background(Color.Gray.copy(alpha = opacity), shape = CircleShape)
+    )
+}
 @Composable
 fun UserChatItem(prompt: String, bitmap: Bitmap?) {
     Column(
@@ -214,7 +277,7 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(LabelSecondary)
+                .background(SystemGray04)
                 .padding(16.dp),
             text = formatText(prompt),
             fontSize = 17.sp,
@@ -232,7 +295,7 @@ fun ModelChatItem(response: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.secondary)
+                .background(Primary)
                 .padding(16.dp),
             text = formatText(response),
             fontSize = 17.sp,
