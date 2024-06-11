@@ -78,7 +78,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Gestión de Gastos") }) },
+        topBar = { TopAppBar(title = { Text("Expense Management") }) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         Box(
@@ -232,12 +232,12 @@ fun FooterLogin(modifier: Modifier, navController: NavController) {
 fun SignUp(navController: NavController) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(
-            text = "No tienes una cuenta?",
+            text = "Don't have an account?",
             fontSize = 12.sp,
             color = Color(0xFFB5B5B5)
         )
         Text(
-            text = " Crear una",
+            text = " Sign Up",
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF4EA8E9),

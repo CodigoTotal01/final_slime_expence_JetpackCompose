@@ -68,7 +68,7 @@ fun RegisterScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Gestión de Gastos: Registro") })
+            TopAppBar(title = { Text("Expense Management: Registration") })
         }
     ) {
         Box(
@@ -238,12 +238,12 @@ fun FooterRegister(modifier: Modifier, navController: NavController) {
 fun TextNavLogin(navController: NavController) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(
-            text = "¿Ya tienes una cuenta?",
+            text = "Already have an account?",
             fontSize = 12.sp,
             color = Color(0xFFB5B5B5)
         )
         Text(
-            text = " Inicia sesión",
+            text = " Sign In",
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF4EA8E9),
