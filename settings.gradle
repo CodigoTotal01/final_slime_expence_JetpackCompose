@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io'}
     }
 }
-rootProject.name = "Goodbye Money"
+rootProject.name = "Expense Tracker IA"
 include ':app'
