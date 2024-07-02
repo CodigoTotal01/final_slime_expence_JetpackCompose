@@ -13,7 +13,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class RegisterViewModel(private val registerUserCallBack: suspend (String, String, String) -> Unit)  : ViewModel() {
+class RegisterViewModel(private val authViewModel: AuthViewModel) : ViewModel() {
 
     private val _fullName = MutableLiveData<String>()
     val fullName: LiveData<String> = _fullName
@@ -33,8 +33,6 @@ class RegisterViewModel(private val registerUserCallBack: suspend (String, Strin
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-
-
     fun onRegisterChanged(fullName: String, email: String, password: String, confirmPassword: String) {
         _fullName.value = fullName
         _email.value = email
@@ -48,40 +46,26 @@ class RegisterViewModel(private val registerUserCallBack: suspend (String, Strin
                 password.length >= 6 && password == confirmPassword
     }
 
-
     fun onFormSubmit() {
         viewModelScope.launch {
-            registerUserCallBack(email.value!!, password.value!!, fullName.value!!);
+            authViewModel.registerUser(email.value!!, password.value!!, fullName.value!!)
         }
     }
+
     suspend fun onRegisterSelected() {
         _isLoading.value = true
-        // Simula un retraso de 4 segundos para mostrar la carga
         delay(4000)
         _isLoading.value = false
     }
 }
 
 class RegisterViewModelFactory(
-    private val authViewModelFactory: AuthViewModelFactory,
-    private val context: Context
-
+    private val authViewModel: AuthViewModel
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
-            // Crear una instancia de AuthViewModel usando AuthViewModelFactory
-            val authViewModel = ViewModelProvider(
-                ViewModelStore(),
-                authViewModelFactory
-            ).get(AuthViewModel::class.java)
-
-            // Definir el callback usando la instancia de AuthViewModel
-            val registerUserCallBack: suspend (String, String, String) -> Unit = { email, password, fullName ->
-                authViewModel.registerUser(email, password, fullName)
-            }
-
-            return RegisterViewModel(registerUserCallBack) as T
+            return RegisterViewModel(authViewModel) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class -Register")
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

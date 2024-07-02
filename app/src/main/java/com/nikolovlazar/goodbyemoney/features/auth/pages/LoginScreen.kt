@@ -3,6 +3,7 @@ package com.nikolovlazar.goodbyemoney.features.auth.pages
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -49,37 +50,33 @@ import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModel
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModelFactory
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.KeyValueStorageService
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
-import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModelFactory
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.*
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
-import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthState
-import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthStatus
-import kotlinx.coroutines.launch
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModelFactory
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
     val context = LocalContext.current
-    val authRepository = AuthRepositoryImpl()
-    val authViewModelFactory = AuthViewModelFactory(authRepository, context)
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(AuthRepositoryImpl(), context))
+    val loginViewModel: LoginViewModel = viewModel(factory = LoginViewModelFactory(authViewModel))
 
+    val isAuthenticated by authViewModel.isAuthenticated.observeAsState()
+    val errorMessage by authViewModel.errorMessage.observeAsState()
 
-    val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
-   //inutilizable val authState by authViewModel.authState.observeAsState(AuthState())
-
-    val loginViewModelFactory = LoginViewModelFactory(authViewModelFactory, context)
-    val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
-
-    val snackbarHostState = remember { SnackbarHostState() }
-
+    LaunchedEffect(isAuthenticated) {
+        if (isAuthenticated == true) {
+            onLoginSuccess()
+        } else if (isAuthenticated == false) {
+            Toast.makeText(context, errorMessage ?: "Verificar datos", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Expense Management") }) },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
         Box(
             Modifier
@@ -87,7 +84,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                 .padding(8.dp)
         ) {
             HeaderForm(Modifier.align(Alignment.TopEnd))
-            BodyLogin(Modifier.align(Alignment.Center), loginViewModel, onLoginSuccess)
+            BodyLogin(Modifier.align(Alignment.Center), loginViewModel)
             FooterLogin(Modifier.align(Alignment.BottomCenter), navController)
         }
     }
@@ -97,7 +94,6 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 fun BodyLogin(
     modifier: Modifier,
     loginViewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit
 ) {
     val email: String by loginViewModel.email.observeAsState(initial = "")
     val password: String by loginViewModel.password.observeAsState(initial = "")
@@ -116,7 +112,6 @@ fun BodyLogin(
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable) {
             loginViewModel.onFormSubmit()
-            onLoginSuccess();
         }
         Spacer(modifier = Modifier.size(16.dp))
     }

@@ -37,92 +37,41 @@ class KeyValueStorageService(context: Context) {
     }
 }
 
-enum class AuthStatus {
-    CHECKING,
-    AUTHENTICATED,
-    NOT_AUTHENTICATED
-}
-
-
-data class AuthState(
-    var authStatus: AuthStatus = AuthStatus.CHECKING,
-    var user: User? = null,
-    var errorMessage: String = ""
-) {
-    fun copyWith(
-        authStatus: AuthStatus? = this.authStatus,
-        user: User? = this.user,
-        errorMessage: String? = this.errorMessage
-    ): AuthState {
-        return AuthState(
-            authStatus = authStatus ?: this.authStatus,
-            user = user ?: this.user,
-            errorMessage = errorMessage ?: this.errorMessage
-        )
-    }
-}
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
     private val keyValueStorageService: KeyValueStorageService
 ) : ViewModel() {
 
-    private val _authState = MutableLiveData(AuthState())
-    val authState: LiveData<AuthState> = _authState
+    val isAuthenticated = MutableLiveData<Boolean>()
+    val errorMessage = MutableLiveData<String>()
 
-    init {
-        // Inicializa el estado de autenticación, si es necesario
-        _authState.value = AuthState()
-    }
     fun loginUser(email: String, password: String) {
-        _authState.value = _authState.value?.copyWith(authStatus = AuthStatus.CHECKING)
         viewModelScope.launch {
             try {
                 val user = authRepository.login(email, password)
-                setLoggedUser(user)
-            } catch (e: CustomError) {
-                Log.d("CustomErrorAuthViewModel", e.message.toString())
-                updateErrorState(e.message)
+                keyValueStorageService.setToken(user.token)
+                isAuthenticated.postValue(true)
             } catch (e: Exception) {
-                Log.d("ErrorGeneral", e.message.toString())
-                updateErrorState("Error no controlado - login")
+                Log.e("AuthViewModel", "Login error: ${e.message}")
+                isAuthenticated.postValue(false)
+                errorMessage.postValue("Verificar datos")
             }
         }
     }
+
     fun registerUser(email: String, password: String, fullName: String) {
-        _authState.value = _authState.value?.copyWith(authStatus = AuthStatus.CHECKING)
         viewModelScope.launch {
             try {
                 val user = authRepository.register(email, password, fullName)
-                setLoggedUser(user)
-            } catch (e: CustomError) {
-                Log.d("CustomErrorAuthViewModel", e.message.toString())
-                updateErrorState(e.message)
+                keyValueStorageService.setToken(user.token)
+                isAuthenticated.postValue(true)
             } catch (e: Exception) {
-                Log.d("ErrorGeneral", e.message.toString())
-                updateErrorState("Error no controlado - registro")
+                Log.e("AuthViewModel", "Register error: ${e.message}")
+                isAuthenticated.postValue(false)
+                errorMessage.postValue("Error al registrar. Verificar datos")
             }
         }
-    }
-    private fun setLoggedUser(user: User) {
-        _authState.value = AuthState(
-            authStatus = AuthStatus.AUTHENTICATED,
-            user = user,
-            errorMessage = ""
-        )
-        Log.d("posi", _authState.value?.authStatus.toString())
-        keyValueStorageService.setToken(user.token)
-    }
-
-    private fun updateErrorState(errorMessage: String) {
-        _authState.value = AuthState(
-            authStatus = AuthStatus.NOT_AUTHENTICATED,
-            user = null,
-            errorMessage = errorMessage
-        )
-        Log.d("negativo", _authState.value?.authStatus.toString())
-
-        keyValueStorageService.removeToken()
     }
 }
 class AuthViewModelFactory(

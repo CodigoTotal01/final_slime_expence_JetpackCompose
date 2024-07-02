@@ -17,8 +17,7 @@ import kotlin.reflect.KSuspendFunction2
 import android.util.Log
 
 
-class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> Unit) :
-    ViewModel() {
+class LoginViewModel(private val authViewModel: AuthViewModel) : ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -28,7 +27,6 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
 
     private val _isLoginEnable = MutableLiveData<Boolean>()
     val isLoginEnable: LiveData<Boolean> = _isLoginEnable
-
 
     fun onLoginChanged(email: String, password: String) {
         _email.value = email
@@ -41,31 +39,16 @@ class LoginViewModel(private val loginUserCallBack: suspend (String, String) -> 
 
     fun onFormSubmit() {
         viewModelScope.launch {
-            loginUserCallBack(email.value!!, password.value!!)
+            authViewModel.loginUser(email.value!!, password.value!!)
         }
     }
 }
-
 class LoginViewModelFactory(
-    private val authViewModelFactory: AuthViewModelFactory,
-    private val context: Context
+    private val authViewModel: AuthViewModel
 ) : ViewModelProvider.Factory {
-
-
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            // Crear una instancia de AuthViewModel usando AuthViewModelFactory
-            val authViewModel = ViewModelProvider(
-                ViewModelStore(),
-                authViewModelFactory
-            ).get(AuthViewModel::class.java)
-
-            // Definir el callback usando la instancia de AuthViewModel
-            val loginUserCallBack: suspend (String, String) -> Unit = { email, password ->
-                authViewModel.loginUser(email, password)
-            }
-
-            return LoginViewModel(loginUserCallBack) as T
+            return LoginViewModel(authViewModel) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

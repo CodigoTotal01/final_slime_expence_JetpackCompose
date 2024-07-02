@@ -2,6 +2,7 @@ package com.nikolovlazar.goodbyemoney.features.auth.pages
 
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +51,8 @@ import com.nikolovlazar.goodbyemoney.R
 import com.nikolovlazar.goodbyemoney.features.auth.infrastructure.repositories.AuthRepositoryImpl
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModel
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.AuthViewModelFactory
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModel
+import com.nikolovlazar.goodbyemoney.features.auth.viewModel.LoginViewModelFactory
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.RegisterViewModel
 import com.nikolovlazar.goodbyemoney.features.auth.viewModel.RegisterViewModelFactory
 
@@ -61,10 +65,21 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit) {
 
     val context = LocalContext.current
-    val authRepository = AuthRepositoryImpl()
-    val authViewModelFactory = AuthViewModelFactory(authRepository, context)
-    val registerViewModelFactory = RegisterViewModelFactory(authViewModelFactory, context)
-    val registerViewModel : RegisterViewModel = viewModel(factory = registerViewModelFactory)
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(AuthRepositoryImpl(), context))
+    val registerViewModel: RegisterViewModel = viewModel(factory = RegisterViewModelFactory(authViewModel))
+
+
+    val isAuthenticated by authViewModel.isAuthenticated.observeAsState()
+    val errorMessage by authViewModel.errorMessage.observeAsState()
+
+    LaunchedEffect(isAuthenticated) {
+        if (isAuthenticated == true) {
+            onRegisterSuccess()
+        } else if (isAuthenticated == false) {
+            Toast.makeText(context, errorMessage ?: "Verificar datos", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -77,7 +92,7 @@ fun RegisterScreen(
                 .padding(8.dp)
         ) {
             HeaderForm(Modifier.align(Alignment.TopEnd))
-            BodyRegister(Modifier.align(Alignment.Center), registerViewModel, onRegisterSuccess)
+            BodyRegister(Modifier.align(Alignment.Center), registerViewModel)
             FooterRegister(Modifier.align(Alignment.BottomCenter), navController)
         }
     }
@@ -88,7 +103,6 @@ fun RegisterScreen(
 fun BodyRegister(
     modifier: Modifier,
     registerViewModel: RegisterViewModel,
-    onRegisterSuccess: () -> Unit
 ) {
     val fullName: String by registerViewModel.fullName.observeAsState(initial = "")
     val email: String by registerViewModel.email.observeAsState(initial = "")
@@ -138,7 +152,6 @@ fun BodyRegister(
 
         RegisterButton(isRegisterEnabled) {
             registerViewModel.onFormSubmit()
-            onRegisterSuccess()
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
