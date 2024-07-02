@@ -67,8 +67,9 @@ class AuthDataSourceImpl : AuthDataSource() {
             }
 
             if (response.isSuccessful) {
-                val user = UserMapper.userJsonToEntity(response.body()!!)
-                Log.d("UserAIP", user.token)
+                val responseBody = response.body() ?: throw CustomError("Response body is null")
+                val user = UserMapper.userJsonToEntity(responseBody)
+                Log.d("UserAPI", user.token)
                 user
             } else {
                 throw CustomError(response.errorBody()?.string() ?: "Credenciales no válidas")

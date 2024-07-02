@@ -2,7 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="CategoryTest">
+        <State />
+      </entry>
+      <entry key="ExpenseTest">
+        <State />
+      </entry>
+      <entry key="addPrompt()">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="testGetResponse()">
+        <State />
+      </entry>
+      <entry key="testcategoryColor()">
         <State />
       </entry>
     </value>

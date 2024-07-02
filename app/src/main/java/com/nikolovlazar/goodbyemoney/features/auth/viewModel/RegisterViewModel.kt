@@ -45,7 +45,7 @@ class RegisterViewModel(private val registerUserCallBack: suspend (String, Strin
 
     private fun checkRegisterEnabled(fullName: String, email: String, password: String, confirmPassword: String): Boolean {
         return fullName.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
-                password.length > 6 && password == confirmPassword
+                password.length >= 6 && password == confirmPassword
     }
 
 
