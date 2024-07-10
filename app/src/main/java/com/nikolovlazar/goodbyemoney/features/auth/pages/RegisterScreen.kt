@@ -76,7 +76,7 @@ fun RegisterScreen(
         if (isAuthenticated == true) {
             onRegisterSuccess()
         } else if (isAuthenticated == false) {
-            Toast.makeText(context, errorMessage ?: "Email ya registrado, probar otro", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, errorMessage ?: "Verificar datos", Toast.LENGTH_SHORT).show()
         }
     }
 
